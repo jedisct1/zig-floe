@@ -44,9 +44,12 @@ fn Floe(comptime Aead: type, comptime Hash: type) type {
     return struct {
         /// Length of the encryption key in bytes (32 for AES-256).
         pub const key_length = Aead.Cipher.key_length;
-        const nonce_length = Aead.Cipher.nonce_length;
-        const tag_length = Aead.Cipher.tag_length;
-        const overhead = nonce_length + tag_length + segment_length_prefix_length;
+        /// Nonce length
+        pub const nonce_length = Aead.Cipher.nonce_length;
+        /// Tag length
+        pub const tag_length = Aead.Cipher.tag_length;
+        /// Overhead per encrypted segment: nonce + tag + length prefix
+        pub const overhead = nonce_length + tag_length + segment_length_prefix_length;
 
         /// Configuration parameters for FLOE encryption.
         pub const Params = struct {
