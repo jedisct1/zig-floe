@@ -175,18 +175,20 @@ fn Floe(comptime Aead: type, comptime Hash: type) type {
             state: State,
             header: [Params.encoded_length + Params.default_iv_length + Params.header_tag_length]u8,
             header_len: usize,
+            io: std.Io,
 
             /// Creates a new encryptor with the given parameters, key, and associated data.
             /// The associated data is authenticated but not encrypted.
-            pub fn init(params: Params, key: [key_length]u8, ad: []const u8) Error!Encryptor {
+            pub fn init(io: std.Io, params: Params, key: [key_length]u8, ad: []const u8) Error!Encryptor {
                 try params.validate();
 
                 var self: Encryptor = .{
                     .state = .{ .params = params, .ad = ad, .message_key = undefined, .iv = undefined },
                     .header = undefined,
                     .header_len = params.header_length(),
+                    .io = io,
                 };
-                crypto.random.bytes(&self.state.iv);
+                io.random(&self.state.iv);
                 const iv = self.state.get_iv();
 
                 const encoded = params.encode();
@@ -224,7 +226,7 @@ fn Floe(comptime Aead: type, comptime Hash: type) type {
                 self.state.ensure_key();
 
                 var nonce: [nonce_length]u8 = undefined;
-                crypto.random.bytes(&nonce);
+                self.io.random(&nonce);
                 const segment_ad = self.state.make_segment_ad(is_last);
 
                 mem.writeInt(u32, out[0..4], if (is_last) @intCast(out_len) else internal_segment_marker, .big);

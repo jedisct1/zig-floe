@@ -15,7 +15,7 @@ test "round trip single segment" {
     const key: [F.key_length]u8 = [_]u8{0} ** F.key_length;
     const ad = "test aad";
 
-    var encryptor = try F.Encryptor.init(params, key, ad);
+    var encryptor = try F.Encryptor.init(testing.io, params, key, ad);
     const header = encryptor.get_header();
 
     const plaintext = "Hello, FLOE!";
@@ -44,7 +44,7 @@ test "round trip multiple segments" {
         b.* = @truncate(i);
     }
 
-    var encryptor = try F.Encryptor.init(params, key, ad);
+    var encryptor = try F.Encryptor.init(testing.io, params, key, ad);
     const header = encryptor.get_header();
 
     const enc_seg_len = params.encrypted_segment_length;
@@ -72,7 +72,7 @@ test "empty plaintext" {
     const key: [F.key_length]u8 = [_]u8{0} ** F.key_length;
     const ad = "";
 
-    var encryptor = try F.Encryptor.init(params, key, ad);
+    var encryptor = try F.Encryptor.init(testing.io, params, key, ad);
     const header = encryptor.get_header();
 
     var ciphertext: [params.encrypted_segment_length]u8 = undefined;
@@ -91,7 +91,7 @@ test "invalid header tag" {
     const wrong_key: [F.key_length]u8 = [_]u8{1} ** F.key_length;
     const ad = "test";
 
-    var encryptor = try F.Encryptor.init(params, key, ad);
+    var encryptor = try F.Encryptor.init(testing.io, params, key, ad);
     const header = encryptor.get_header();
 
     const result = F.Decryptor.init(params, wrong_key, ad, header);
@@ -103,7 +103,7 @@ test "segment authentication failure" {
     const key: [F.key_length]u8 = [_]u8{0} ** F.key_length;
     const ad = "test";
 
-    var encryptor = try F.Encryptor.init(params, key, ad);
+    var encryptor = try F.Encryptor.init(testing.io, params, key, ad);
     const header = encryptor.get_header();
 
     var ciphertext: [params.encrypted_segment_length]u8 = undefined;
@@ -184,7 +184,7 @@ test "single segment small params" {
     const key: [F.key_length]u8 = [_]u8{0} ** F.key_length;
     const ad = "This is AAD";
 
-    var encryptor = try F.Encryptor.init(params, key, ad);
+    var encryptor = try F.Encryptor.init(testing.io, params, key, ad);
     const header = encryptor.get_header();
 
     const plaintext = "test123";
@@ -203,7 +203,7 @@ test "single segment with rotation params" {
     const key: [F.key_length]u8 = [_]u8{0} ** F.key_length;
     const ad = "This is AAD";
 
-    var encryptor = try F.Encryptor.init(params, key, ad);
+    var encryptor = try F.Encryptor.init(testing.io, params, key, ad);
     const header = encryptor.get_header();
 
     const plaintext = "test123";
@@ -230,7 +230,7 @@ test "two segments with rotation params" {
         b.* = @truncate(i);
     }
 
-    var encryptor = try F.Encryptor.init(params, key, ad);
+    var encryptor = try F.Encryptor.init(testing.io, params, key, ad);
     const header = encryptor.get_header();
 
     var ciphertext: [enc_seg_len * 2]u8 = undefined;
@@ -262,7 +262,7 @@ test "segments crossing rotation boundary" {
         b.* = @truncate(i);
     }
 
-    var encryptor = try F.Encryptor.init(params, key, ad);
+    var encryptor = try F.Encryptor.init(testing.io, params, key, ad);
     const header = encryptor.get_header();
 
     var ciphertext: [enc_seg_len * 5]u8 = undefined;
