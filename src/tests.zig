@@ -12,7 +12,7 @@ test "plaintext segment length" {
 
 test "round trip single segment" {
     const params = F.Params.gcm256_iv256_4k;
-    const key: [F.key_length]u8 = [_]u8{0} ** F.key_length;
+    const key: [F.key_length]u8 = @splat(0);
     const ad = "test aad";
 
     var encryptor = try F.Encryptor.init(testing.io, params, key, ad);
@@ -34,7 +34,7 @@ test "round trip single segment" {
 
 test "round trip multiple segments" {
     const params = F.Params{ .encrypted_segment_length = 64 };
-    const key: [F.key_length]u8 = [_]u8{0} ** F.key_length;
+    const key: [F.key_length]u8 = @splat(0);
     const ad = "This is AAD";
 
     const pt_seg_len = comptime params.plaintext_segment_length();
@@ -69,7 +69,7 @@ test "round trip multiple segments" {
 
 test "empty plaintext" {
     const params = F.Params.gcm256_iv256_4k;
-    const key: [F.key_length]u8 = [_]u8{0} ** F.key_length;
+    const key: [F.key_length]u8 = @splat(0);
     const ad = "";
 
     var encryptor = try F.Encryptor.init(testing.io, params, key, ad);
@@ -87,8 +87,8 @@ test "empty plaintext" {
 
 test "invalid header tag" {
     const params = F.Params.gcm256_iv256_4k;
-    const key: [F.key_length]u8 = [_]u8{0} ** F.key_length;
-    const wrong_key: [F.key_length]u8 = [_]u8{1} ** F.key_length;
+    const key: [F.key_length]u8 = @splat(0);
+    const wrong_key: [F.key_length]u8 = @splat(1);
     const ad = "test";
 
     var encryptor = try F.Encryptor.init(testing.io, params, key, ad);
@@ -100,7 +100,7 @@ test "invalid header tag" {
 
 test "segment authentication failure" {
     const params = F.Params.gcm256_iv256_4k;
-    const key: [F.key_length]u8 = [_]u8{0} ** F.key_length;
+    const key: [F.key_length]u8 = @splat(0);
     const ad = "test";
 
     var encryptor = try F.Encryptor.init(testing.io, params, key, ad);
@@ -159,7 +159,7 @@ fn decrypt_kat(
 
 test "KAT: GCM256_IV256_64" {
     const params = F.Params{ .encrypted_segment_length = 64 };
-    const key: [F.key_length]u8 = [_]u8{0} ** F.key_length;
+    const key: [F.key_length]u8 = @splat(0);
     const ad = "This is AAD";
 
     const m = hex_decode("b7f54726b914b689881ab315b032a633b452c1c59a43f430c1cc00a39d1a5eb4773dbc6b5f26255e0d3714694c9c9ffbfa8adb998aecbb0601a4cade83764b8b13ccaa");
@@ -170,7 +170,7 @@ test "KAT: GCM256_IV256_64" {
 
 test "KAT: GCM256_IV256_64 2" {
     const params = F.Params{ .encrypted_segment_length = 64 };
-    const key: [F.key_length]u8 = [_]u8{0} ** F.key_length;
+    const key: [F.key_length]u8 = @splat(0);
     const ad = "This is AAD";
 
     const m = hex_decode("060704a0818fd875cdcd46c1a0f04c256a4d82f92b2d84b4db172e8e816a2caeb895102aa8f21d4cdd5a076bf66c179729b0de8cbf4adce527bc9d0042da3b78c101401ce078b1419c08167df00aecf21588e179ca7e340e8080ed6c3eea03b6d78007fc25994758c355b82b415092f15f79a49473d9f5a3e9f74ea099b897b1b5cb8b");
@@ -181,7 +181,7 @@ test "KAT: GCM256_IV256_64 2" {
 
 test "single segment small params" {
     const params = F.Params{ .encrypted_segment_length = 40 };
-    const key: [F.key_length]u8 = [_]u8{0} ** F.key_length;
+    const key: [F.key_length]u8 = @splat(0);
     const ad = "This is AAD";
 
     var encryptor = try F.Encryptor.init(testing.io, params, key, ad);
@@ -200,7 +200,7 @@ test "single segment small params" {
 
 test "single segment with rotation params" {
     const params = F.Params{ .encrypted_segment_length = 40, .override_rotation_mask = 2 };
-    const key: [F.key_length]u8 = [_]u8{0} ** F.key_length;
+    const key: [F.key_length]u8 = @splat(0);
     const ad = "This is AAD";
 
     var encryptor = try F.Encryptor.init(testing.io, params, key, ad);
@@ -219,7 +219,7 @@ test "single segment with rotation params" {
 
 test "two segments with rotation params" {
     const params = F.Params{ .encrypted_segment_length = 40, .override_rotation_mask = 2 };
-    const key: [F.key_length]u8 = [_]u8{0} ** F.key_length;
+    const key: [F.key_length]u8 = @splat(0);
     const ad = "This is AAD";
 
     const pt_seg_len = comptime params.plaintext_segment_length();
@@ -251,7 +251,7 @@ test "two segments with rotation params" {
 
 test "segments crossing rotation boundary" {
     const params = F.Params{ .encrypted_segment_length = 40, .override_rotation_mask = 2 };
-    const key: [F.key_length]u8 = [_]u8{0} ** F.key_length;
+    const key: [F.key_length]u8 = @splat(0);
     const ad = "This is AAD";
 
     const pt_seg_len = comptime params.plaintext_segment_length();
@@ -287,7 +287,7 @@ test "segments crossing rotation boundary" {
 
 test "KAT: rotation" {
     const params = F.Params{ .encrypted_segment_length = 40, .override_rotation_mask = 2 };
-    const key: [F.key_length]u8 = [_]u8{0} ** F.key_length;
+    const key: [F.key_length]u8 = @splat(0);
     const ad = "This is AAD";
 
     const m = hex_decode("baec5a3d05e96837d3672de18881ddf7454528cf2c8e604dc09e5e08c3233bba59f8c0359db60547ef988903e36bcc80dce0f693c04c757a664e030246b15bccf6309663d5264d22654b0f86616d6c4c6611fa");
@@ -298,7 +298,7 @@ test "KAT: rotation" {
 
 test "KAT: rotation2" {
     const params = F.Params{ .encrypted_segment_length = 40, .override_rotation_mask = 2 };
-    const key: [F.key_length]u8 = [_]u8{0} ** F.key_length;
+    const key: [F.key_length]u8 = @splat(0);
     const ad = "This is AAD";
 
     const m = hex_decode("1c79058d26a13b0cac41256ca000c75b8938f2378c76e2d01308d9a9e2240ea4d30086565a748049fa45efcbdaf51c317f3f403747b09f856e4e516624906a347a2bae2a5079576eb340ac4367611439c40d54");
@@ -309,7 +309,7 @@ test "KAT: rotation2" {
 
 test "KAT: rotation3" {
     const params = F.Params{ .encrypted_segment_length = 40, .override_rotation_mask = 2 };
-    const key: [F.key_length]u8 = [_]u8{0} ** F.key_length;
+    const key: [F.key_length]u8 = @splat(0);
     const ad = "This is AAD";
 
     const m = hex_decode("71444e9093e66a14af70396e5446ce0e987f5477759627a0f45f36a9d811c6bcb1c07243e3ed2294657fdf9270775fcfe7d3dc6b529d99aa12969556fed5226a35cb54c8ebff2fef7721c81ab732e65ffdba4e");
